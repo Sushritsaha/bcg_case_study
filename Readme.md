@@ -63,6 +63,9 @@ Application performs the following analyses and stores results:
 4. Code should be strictly developed using Data Frame APIs (Do not use Spark SQL)
 5. Share the entire project as zip or link to project in GitHub repo.
 
+## Considerations
+- Tested on MacOS
+
 ## Running the Analysis
 
 ### Quick Start
