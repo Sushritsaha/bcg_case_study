@@ -94,3 +94,4 @@ run: build verify_spark ## Run the analysis using spark-submit
 all: clean setup prep_data build run ## Run all steps in sequence
 
 .PHONY: help clean setup verify_spark build run all
+
