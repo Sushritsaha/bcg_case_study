@@ -1,0 +1,83 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Build and Distribution
+[Bb]uild/
+[Dd]ist/
+*.egg-info/
+**/*.egg-info/
+develop-eggs/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+.installed.cfg
+*.egg
+
+# Output files and directories
+[Oo]utput/
+**/[Oo]utput/
+*.out
+
+# Virtual Environment
+venv/
+env/
+ENV/
+.env
+.venv
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+.project
+.pydevproject
+.settings/
+
+# Logs
+[Ll]ogs/
+**/[Ll]ogs/
+*.log
+
+# Data
+[Dd]ata/
+**/[Dd]ata/
+*.csv
+*.parquet
+*.json
+
+# Jupyter Notebook
+.ipynb_checkpoints
+*.ipynb
+
+# Playground
+playground.pynb
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Distribution / packaging
+*.pyc
+*.pyo
+*.pyd
+*.so
+
+# Testing
+.coverage
+.tox/
+.pytest_cache/
+htmlcov/
+.coverage.*
+coverage.xml
+*.cover
