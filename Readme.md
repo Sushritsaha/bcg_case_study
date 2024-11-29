@@ -22,8 +22,8 @@ All required Python packages are listed in `requirements.txt`:
 
 1. Set up Spark:
    - Download Spark 3.5.3 from [Apache Spark](https://spark.apache.org/downloads.html)
-   - Extract to `~/Downloads/spark-3.5.3-bin-hadoop3`
-   - Ensure Spark is executable: `chmod +x ~/Downloads/spark-3.5.3-bin-hadoop3/bin/spark-submit`
+   - Set SPARK_HOME environment variable to your Spark installation directory
+   - Ensure Spark is executable: `chmod +x $SPARK_HOME/bin/spark-submit`
 
 2. Install dependencies:
 ```bash
@@ -55,20 +55,55 @@ Application performs the following analyses and stores results:
 9. Analytics 9: Count of Distinct Crash IDs where No Damaged Property was observed and Damage Level (VEH_DMAG_SCL~) is above 4 and car avails Insurance
 10. Analytics 10: Determine the Top 5 Vehicle Makes where drivers are charged with speeding related offences, has licensed Drivers, uses top 10 used vehicle colours and has car licensed with the Top 25 states with highest number of offences
 
+## Expected Output
+
+1. Develop an application which is modular & follows software engineering best practices (e.g. Classes, docstrings, functions, config driven, command line executable through spark-submit)
+2. Code should be properly organized in folders as a project.
+3. Input data sources and output should be config driven
+4. Code should be strictly developed using Data Frame APIs (Do not use Spark SQL)
+5. Share the entire project as zip or link to project in GitHub repo.
+
 ## Running the Analysis
 
-1. Prepare the environment:
-```bash
-make setup
-```
-
-2. Run all analyses:
+### Quick Start
+Run all analyses with default settings:
 ```bash
 make all
 ```
 
-Or run steps individually:
+### Step by Step
+Run individual steps:
 ```bash
+make setup      # Install dependencies
+make prep_data  # Prepare data files
+make build     # Build package
+make run       # Run analysis
+```
+
+### Customizing Execution
+You can customize the execution by setting environment variables:
+
+```bash
+# Example: Running with custom Spark settings
+SPARK_HOME=/path/to/spark \
+SPARK_MASTER=spark://master:7077 \
+SPARK_EXECUTOR_MEMORY=4g \
+make run
+```
+
+Available environment variables:
+- `SPARK_HOME`: Path to Spark installation
+- `PYTHON`: Python interpreter to use (default: python3)
+- `SPARK_MASTER`: Spark master URL (default: local[*])
+- `SPARK_APP_NAME`: Application name
+- `SPARK_EXECUTOR_MEMORY`: Executor memory (default: 2g)
+- `SPARK_DRIVER_MEMORY`: Driver memory (default: 2g)
+- `SPARK_SHUFFLE_PARTITIONS`: Number of shuffle partitions (default: 8)
+- `CONFIG_FILE`: Path to config file (default: config.yaml)
+
+View all options and current settings:
+```bash
+make help      # Display help
 make setup     # Install dependencies
 make prep_data # Prepare data files
 make build    # Build package
@@ -83,15 +118,14 @@ The application uses:
   - Output directory paths
   - Analysis-specific parameters
   - Logging configuration
-- `Makefile`: Automates:
+
+- `Makefile`: Automates and configures:
   - Environment setup
   - Package building
   - Spark submission
   - Data preparation
-- Spark settings in environment:
-  - Master: local[*] (uses all available cores)
-  - Memory: 4G for driver and executor
-  - Python egg file for dependencies
+  - Memory settings
+  - Parallelism configuration
 
 ## Output
 
@@ -107,12 +141,17 @@ bcg_case_study/
 ├── Data/                           # Input data directory
 │   ├── Charges_use.csv            # Vehicle/driver charges information
 │   ├── Damages_use.csv            # Vehicle damage details
-│   ├── Endorse_use.csv           # Driver endorsements
-│   ├── Primary_Person_use.csv    # Primary person in accidents
-│   ├── Restrict_use.csv          # Driver restrictions
-│   └── Units_use.csv             # Vehicle unit information
+│   ├── Endorse_use.csv            # Driver endorsements
+│   ├── Primary_Person_use.csv     # Primary person in accidents
+│   ├── Restrict_use.csv           # Driver restrictions
+│   └── Units_use.csv              # Vehicle unit information
 │
-├── Output/                        # Analysis results directory
+├── src/                            # Source code directory
+│   ├── __init__.py                 # Package initializer
+│   ├── crash_analysis_processor.py # Core analysis logic
+│   └── utils.py                    # Utility functions
+│
+├── Output/                       # Analysis results directory
 │   ├── 1/                        # Male fatality analysis
 │   ├── 2/                        # Two-wheeler analysis
 │   ├── 3/                        # Vehicle make analysis
@@ -124,69 +163,77 @@ bcg_case_study/
 │   ├── 9/                        # Damage analysis
 │   └── 10/                       # Vehicle make/speeding analysis
 │
-├── src/                          # Source code directory
-│   ├── __init__.py              # Package initializer
-│   ├── utils.py                 # Utility functions
-│   └── us_vehicle_accident_analysis.py  # Core analysis logic
-│
 ├── logs/                         # Log files directory
-│   └── app.log                  # Application logs
-│
-├── main.py                      # Application entry point
-├── config.yaml                  # Configuration settings
-├── requirements.txt             # Python dependencies
-├── setup.py                     # Package setup configuration
-├── Makefile                     # Build automation
-└── README.md                    # Project documentation
+├── build/                        # Build artifacts
+├── dist/                         # Distribution packages
+├── Data.zip                      # Compressed data file
+├── main.py                       # Application entry point
+├── config.yaml                   # Configuration settings
+├── requirements.txt              # Python dependencies
+├── setup.py                      # Package setup configuration
+├── Makefile                      # Build automation
+└── README.md                     # Project documentation
 ```
 
-### Key Components
+## Error Handling
 
-1. **Data Files**
-   - `Charges_use.csv`: Traffic violations and charges
-   - `Damages_use.csv`: Vehicle and property damage details
-   - `Endorse_use.csv`: Driver license endorsements
-   - `Primary_Person_use.csv`: Main person involved in accident
-   - `Restrict_use.csv`: Driver license restrictions
-   - `Units_use.csv`: Vehicle details and circumstances
+The Makefile includes various safety checks:
+- Verifies Spark installation
+- Checks for required files
+- Validates environment setup
+- Provides clear error messages
 
-2. **Source Code**
-   - `main.py`: Entry point, handles argument parsing and execution
-   - `src/us_vehicle_accident_analysis.py`: Core analysis implementation
-   - `src/utils.py`: Helper functions and utilities
+## Runbook
 
-3. **Configuration**
-   - `config.yaml`: Data paths and analysis parameters
-   - `setup.py`: Package metadata and dependencies
-   - `requirements.txt`: Python package requirements
+Clone the repo and follow these steps:
 
-4. **Build & Automation**
-   - `Makefile`: Build and run automation
-   - Output directories (1-10): Analysis results
-   - `logs/`: Application execution logs
+### Considerations
+- Tested on MacOS
 
-## Troubleshooting
+### Quick Start Steps
+1. Go to the Project Directory:
+   ```bash
+   cd bcg_case_study
+   ```
 
-1. Spark Submit Permission Error:
+2. View available commands:
+   ```bash
+   make help
+   ```
+
+3. Prepare the environment:
+   ```bash
+   make setup
+   make prep_data
+   ```
+
+4. Build the project:
+   ```bash
+   make build
+   ```
+
+5. Run the analysis:
+   ```bash
+   make run
+   ```
+
+### Manual Spark Submit
+If you prefer to run spark-submit directly:
 ```bash
-chmod +x ~/Downloads/spark-3.5.3-bin-hadoop3/bin/spark-submit
+spark-submit \
+    --master "local[*]" \
+    --py-files dist/bcg_case_study_29nov-0.0.1-py3.10.egg \
+    main.py --config config.yaml
 ```
 
-2. Memory Issues:
-- Increase driver/executor memory in Makefile:
-```makefile
-SPARK_DRIVER_MEMORY=8g
-SPARK_EXECUTOR_MEMORY=8g
-```
+## Contributing
 
-3. Python Version Mismatch:
-- Ensure Python 3.7+ is installed
-- Check virtual environment if used
+1. Fork the repository
+2. Create your feature branch
+3. Commit your changes
+4. Push to the branch
+5. Create a Pull Request
 
-4. Data File Issues:
-- Run `make prep_data` to reset data files
-- Verify CSV files in Data directory
+## License
 
-## Author
-
-- Sushrit Saha (sushrit.saha@outlook.com)
+This project is licensed under the MIT License - see the LICENSE file for details.
