@@ -226,14 +226,5 @@ spark-submit \
     main.py --config config.yaml
 ```
 
-## Contributing
-
-1. Fork the repository
-2. Create your feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a Pull Request
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
+## Author
+- Sushrit Saha (sushrit.saha@outlook.com)
